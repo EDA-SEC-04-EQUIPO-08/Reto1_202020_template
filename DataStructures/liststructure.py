@@ -130,7 +130,7 @@ def size(lst):
         Exception
     """
     try:
-        if (lst['type']=='ARRAY_LIST'):
+        if (lst['type']=="ARRAY_LIST"):
             return alt.size(lst)
         else:
             return slt.size(lst)
