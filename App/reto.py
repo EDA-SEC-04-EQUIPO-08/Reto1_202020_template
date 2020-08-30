@@ -178,6 +178,38 @@ def elementsByGenres(criteria,lst1):
             lt.addLast(lst,element)
     return lst
    
+   
+ def conocerActor(nombre, lst1, lst2):
+    lst=lt.newList('ARRAY_LIST')
+    iterator = it.newIterator(lst1)
+    counter=0
+    nombres_peliculas=[]
+    datos_actor=[]
+    promedio=0
+    contador=0
+    directores=[]
+    mayor=0
+    director=0
+    while it.hasNext(iterator):
+        element=it.newIterator(iterator)
+        if nombre.lower() == element['actor1_name'].lower() or nombre.lower() == element['actor2_name'].lower() or nombre.lower() in element['actor3_name'].lower() or nombre.lower() == element['actor4_name'].lower() or nombre.lower() == element['actor5_name'].lower():
+            lt.addLast(lst, element)
+            counter=lst['size']
+    for i in lst['elements']:
+        for j in lst2['elements']:
+            if i['id']== j['id']:
+                nombres_peliculas.append(j['original_title'])
+                promedio+=float(j['vote_average'])
+                contador+=1
+        directores.append(i['director_name'])
+    for i in directores:
+        x=directores.count(i)
+        if x>mayor:
+            mayor=x
+            director=i
+    return [counter, nombres_peliculas, promedio/contador, director]
+   
+   
 def main():
     """
     Método principal del programa, se encarga de manejar todos los metodos adicionales creados
@@ -237,7 +269,12 @@ def main():
                 elif lista_casting==None or lista_casting['size']==0: #obtener la longitud de la lista
                     print("La lista casting esta vacía")
                 else:
-                    pass
+                    criteria= input('Ingrese el nombre del actor: ')
+                    x=conocerActor(criteria, lista_casting, lista_details)
+                    print ("Este actor ha participado en:\n")
+                    for i in x[1]:
+                        print(i)
+                    print ("para un total de "+x[0]+" películas. El promedio de votación\n de sus películas es "+str(x[2])+ " y el director con \n el que más actúa es "+x[3])
                 
             elif int(inputs[0])==5: #opcion 5
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
