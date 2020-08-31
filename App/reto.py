@@ -191,7 +191,7 @@ def elementsByGenres(criteria,lst1):
     mayor=0
     director=0
     while it.hasNext(iterator):
-        element=it.newIterator(iterator)
+        element=it.next(iterator)
         if nombre.lower() == element['actor1_name'].lower() or nombre.lower() == element['actor2_name'].lower() or nombre.lower() in element['actor3_name'].lower() or nombre.lower() == element['actor4_name'].lower() or nombre.lower() == element['actor5_name'].lower():
             lt.addLast(lst, element)
             counter=lst['size']
@@ -207,7 +207,19 @@ def elementsByGenres(criteria,lst1):
         if x>mayor:
             mayor=x
             director=i
-    return [counter, nombres_peliculas, promedio/contador, director]
+    return (counter, nombres_peliculas, (promedio/contador), director)
+   
+   
+   def entender_genero (genero,lst):
+    lista=lt.newList('ARRAY_LIST')
+    promedio=0
+    iterator=it.newIterator(lst)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        if genero.lower() in element['genres'].lower():
+            lt.addLast(lista,element)
+            promedio+=float(element['vote_average'])
+    return (lista,(promedio/int(lista['size'])))
    
    
 def main():
@@ -263,18 +275,19 @@ def main():
                         element = it.next(iterator)
                         print(str(i)+"- "+element["original_title"])
                         i += 1      
-            elif int(inputs[0])==4: #opcion 4
+           elif int(inputs[0])==4: #opcion 4
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
                     print("La lista details esta vacía")  
                 elif lista_casting==None or lista_casting['size']==0: #obtener la longitud de la lista
                     print("La lista casting esta vacía")
                 else:
                     criteria= input('Ingrese el nombre del actor: ')
-                    x=conocerActor(criteria, lista_casting, lista_details)
+                    cantidad,peliculas,promedio,director=conocerActor(criteria, lista_casting, lista_details)
                     print ("Este actor ha participado en:\n")
-                    for i in x[1]:
+                    for i in peliculas:
                         print(i)
-                    print ("para un total de "+x[0]+" películas. El promedio de votación\n de sus películas es "+str(x[2])+ " y el director con \n el que más actúa es "+x[3])
+                    print ("para un total de "+str(cantidad)+" películas. El promedio de votación\nde sus películas es "+str(promedio)+ " y el director con\nel que más actúa es "+director)
+                    
                 
             elif int(inputs[0])==5: #opcion 5
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
@@ -282,7 +295,16 @@ def main():
                 elif lista_casting==None or lista_casting['size']==0: #obtener la longitud de la lista
                     print("La lista casting esta vacía")
                 else:
-                    pass
+                    criteria=input('Ingrese el nombre del género: ')
+                    x,promedio=entender_genero(criteria,lista_details)
+                    iterator = it.newIterator(x)
+                    i=1
+                    print ("Hay "+str(x['size'])+ " películas de este género con un promedio de votación de "+str(promedio)+".")
+                    print ("Las películas son:")
+                    while  it.hasNext(iterator):
+                        element = it.next(iterator)
+                        print(str(i)+"- "+element["original_title"])
+                        i += 1  
             elif int(inputs[0])==6: #opcion 6
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
                     print("La lista details esta vacía")  
