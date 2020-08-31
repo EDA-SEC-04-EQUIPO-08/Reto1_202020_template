@@ -181,10 +181,13 @@ def elementsByGenres(criteria,lst1):
    
  def conocerActor(nombre, lst1, lst2):
     lst=lt.newList('ARRAY_LIST')
+    if lst1['size']>2001:
+        x='\ufeffid'
+    else:
+        x='id'
     iterator = it.newIterator(lst1)
     counter=0
     nombres_peliculas=[]
-    datos_actor=[]
     promedio=0
     contador=0
     directores=[]
@@ -197,17 +200,16 @@ def elementsByGenres(criteria,lst1):
             counter=lst['size']
     for i in lst['elements']:
         for j in lst2['elements']:
-            if i['id']== j['id']:
+            if i[x]== j[x]:
                 nombres_peliculas.append(j['original_title'])
                 promedio+=float(j['vote_average'])
-                contador+=1
         directores.append(i['director_name'])
     for i in directores:
         x=directores.count(i)
         if x>mayor:
             mayor=x
             director=i
-    return (counter, nombres_peliculas, (promedio/contador), director)
+    return (counter, nombres_peliculas, (promedio/counter), director)
    
    
    def entender_genero (genero,lst):
