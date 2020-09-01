@@ -65,7 +65,7 @@ def loadCSVFile (file, cmpfunction):
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
-        with open( file, encoding="utf-8") as csvfile:
+        with open( file, encoding="utf-8-sig") as csvfile:
             row = csv.DictReader(csvfile, dialect=dialect)
             for elemento in row: 
                 lt.addLast(lst,elemento)
@@ -106,10 +106,6 @@ def countElementsByCriteria(criteria, lst1,lst2):
     lst = lt.newList()
     promedio=0
     ids=[]
-    if lst1["size"]>2001:
-        x='\ufeffid'        #Con la lista large carga '\ufeffid' en vez de "id"
-    else:
-        x="id"
 
     iterator = it.newIterator(lst1)
     while  it.hasNext(iterator):
@@ -120,7 +116,7 @@ def countElementsByCriteria(criteria, lst1,lst2):
     iterator = it.newIterator(lst2)
     while  it.hasNext(iterator):
         pelicula = it.next(iterator)
-        if pelicula[x] in ids: 
+        if pelicula["id"] in ids: 
             lt.addLast(lst,pelicula)
             promedio+=float(pelicula["vote_average"])
     promedio/=lst["size"]
@@ -179,17 +175,12 @@ def elementsByGenres(criteria,lst1):
     return lst
    
    
- def conocerActor(nombre, lst1, lst2):
+def conocerActor(nombre, lst1, lst2):
     lst=lt.newList('ARRAY_LIST')
-    if lst1['size']>2001:
-        x='\ufeffid'
-    else:
-        x='id'
     iterator = it.newIterator(lst1)
     counter=0
     nombres_peliculas=[]
     promedio=0
-    contador=0
     directores=[]
     mayor=0
     director=0
@@ -200,7 +191,7 @@ def elementsByGenres(criteria,lst1):
             counter=lst['size']
     for i in lst['elements']:
         for j in lst2['elements']:
-            if i[x]== j[x]:
+            if i['id']== j["id"]:
                 nombres_peliculas.append(j['original_title'])
                 promedio+=float(j['vote_average'])
         directores.append(i['director_name'])
@@ -212,7 +203,7 @@ def elementsByGenres(criteria,lst1):
     return (counter, nombres_peliculas, (promedio/counter), director)
    
    
-   def entender_genero (genero,lst):
+def entender_genero (genero,lst):
     lista=lt.newList('ARRAY_LIST')
     promedio=0
     iterator=it.newIterator(lst)
@@ -240,8 +231,8 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista_casting = loadMovies("Data/themoviesdb/MoviesCastingRaw-small.csv") #llamar funcion cargar datos
-                lista_details = loadMovies("Data/themoviesdb/SmallMoviesDetailsCleaned.csv")
+                lista_casting = loadMovies("Data/AllMoviesCastingRaw.csv") #llamar funcion cargar datos
+                lista_details = loadMovies("Data/AllMoviesDetailsCleaned.csv")
                 print("Datos cargados en lista casting, ",lista_casting['size']," elementos cargados")
                 print("Datos cargados en lista details, ",lista_details['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
@@ -277,7 +268,7 @@ def main():
                         element = it.next(iterator)
                         print(str(i)+"- "+element["original_title"])
                         i += 1      
-           elif int(inputs[0])==4: #opcion 4
+            elif int(inputs[0])==4: #opcion 4
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
                     print("La lista details esta vacía")  
                 elif lista_casting==None or lista_casting['size']==0: #obtener la longitud de la lista
@@ -299,14 +290,17 @@ def main():
                 else:
                     criteria=input('Ingrese el nombre del género: ')
                     x,promedio=entender_genero(criteria,lista_details)
-                    iterator = it.newIterator(x)
                     i=1
-                    print ("Hay "+str(x['size'])+ " películas de este género con un promedio de votación de "+str(promedio)+".")
-                    print ("Las películas son:")
-                    while  it.hasNext(iterator):
-                        element = it.next(iterator)
-                        print(str(i)+"- "+element["original_title"])
+                    print ("\nLas 10 primeras películas son:")    #Solo imprime las 10 primeras y las 10 ultimas para no
+                    while  i<11:                                #imprimir mucho con las listas large
+                        print(str(i)+"- "+(lt.getElement(x, i)["original_title"]))
                         i += 1  
+                    i=(x["size"]-10)
+                    print ("Las 10 ultimas películas son:")
+                    while  i<=x["size"]:
+                        print(str(i)+"- "+(lt.getElement(x, i)["original_title"]))
+                        i += 1  
+                    print ("Hay "+str(x['size'])+ " películas de este género con un promedio de votación de "+str(promedio)+".")
             elif int(inputs[0])==6: #opcion 6
                 if lista_details==None or lista_details['size']==0: #obtener la longitud de la lista
                     print("La lista details esta vacía")  
@@ -318,7 +312,7 @@ def main():
                     crecimiento =input("Ingrese 1 si quiere la lista de las 10 mejores películas, o 2 si quiere la lista de las 10 peores películas.\n")
                     tamaño = 10
                     lista,prom=orderElementsByGenre(crecimiento,genre,criteria,lista_details,tamaño)
-                    print ("La lista de las 10 peliculas  es:")
+                    print ("La lista de las 10 peliculas es:")
                     iterator = it.newIterator(lista)
                     i=1
                     while  it.hasNext(iterator):
